@@ -117,6 +117,8 @@ export default function SignUp() {
   });
 
   const onSubmit = async (data: SignupForm) => {
+    console.log("Form submission started with data:", data);
+    console.log("Form validation errors:", form.formState.errors);
     try {
       const { confirmPassword, agreeToTerms, ...userData } = data;
       
@@ -125,6 +127,7 @@ export default function SignUp() {
         dateOfBirth: new Date(userData.dateOfBirth),
       };
 
+      console.log("Formatted data being sent:", formattedData);
       await register(formattedData);
       
       toast({
@@ -134,6 +137,7 @@ export default function SignUp() {
       
       setLocation("/");
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration Failed",
         description: error instanceof Error ? error.message : "Please try again later.",
@@ -142,8 +146,28 @@ export default function SignUp() {
     }
   };
 
-  const nextStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
+  const nextStep = async () => {
+    console.log("Next step clicked, current step:", currentStep);
+    console.log("Form state:", form.formState);
+    console.log("Form values:", form.getValues());
+    console.log("Form errors:", form.formState.errors);
+    
+    // Validate current step fields before proceeding
+    let fieldsToValidate: string[] = [];
+    if (currentStep === 1) {
+      fieldsToValidate = ["firstName", "lastName", "email", "password", "confirmPassword", "dateOfBirth"];
+    } else if (currentStep === 2) {
+      fieldsToValidate = ["phone", "ssn", "streetAddress", "city", "state", "zipCode"];
+    }
+    
+    const isStepValid = await form.trigger(fieldsToValidate);
+    console.log("Is current step valid:", isStepValid);
+    
+    if (isStepValid && currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      console.log("Step validation failed, not advancing");
+    }
   };
 
   const prevStep = () => {
@@ -589,6 +613,7 @@ export default function SignUp() {
                       className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group" 
                       disabled={isRegisterPending}
                       data-testid="button-create-account"
+                      onClick={() => console.log("Create Account button clicked", form.formState.isValid, form.formState.errors)}
                     >
                       {isRegisterPending ? (
                         <div className="flex items-center space-x-2">
