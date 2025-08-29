@@ -5,14 +5,16 @@ import { storage } from "./storage";
 import { insertUserSchema, insertMessageSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import session from "express-session";
-import MongoStore from "connect-mongo";
+import connectPgSimple from "connect-pg-simple";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session configuration (MongoDB)
+  // Session configuration (PostgreSQL)
+  const PgSession = connectPgSimple(session);
   app.use(session({
-    store: MongoStore.create({
-      mongoUrl: process.env.DATABASE_URL,
-      ttl: 24 * 60 * 60, // 24 hours
+    store: new PgSession({
+      conString: process.env.DATABASE_URL,
+      tableName: 'sessions',
+      createTableIfMissing: true,
     }),
     secret: process.env.SESSION_SECRET || "secure-professional-bank-secret",
     resave: false,
@@ -55,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session for the new user
       req.session.userId = user.id;
       req.session.isAdmin = false;
-      req.session.isApproved = user.isApproved;
+      req.session.isApproved = user.isApproved ?? false;
 
       res.json({ 
         user: { 
@@ -88,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       req.session.userId = user.id;
       req.session.isAdmin = false;
-      req.session.isApproved = user.isApproved;
+      req.session.isApproved = user.isApproved ?? false;
 
       res.json({ 
         user: { 
@@ -139,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current user
   app.get("/api/auth/user", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -223,6 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create default checking account for approved user
       await storage.createAccount({
         userId: user.id,
+        accountNumber: `SPB${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
         accountType: "checking",
         balance: "0.00",
         isActive: true,
@@ -250,8 +253,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get messages for current user
   app.get("/api/messages", requireAuth, async (req, res) => {
     try {
-      const adminId = req.session.isAdmin ? req.session.userId : "admin-id";
-      const userId = req.session.isAdmin ? undefined : req.session.userId;
+      const adminId = req.session.isAdmin ? req.session.userId! : "admin-id";
+      const userId = req.session.isAdmin ? undefined : req.session.userId!;
       
       let messages;
       if (req.session.isAdmin) {
@@ -259,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         messages = await storage.getMessages(adminId);
       } else {
         // User sees messages with admin
-        messages = await storage.getMessages(userId, adminId);
+        messages = await storage.getMessages(userId!, adminId);
       }
       
       res.json(messages);
@@ -271,7 +274,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get conversations (admin only)
   app.get("/api/admin/conversations", requireAdmin, async (req, res) => {
     try {
-      const conversations = await storage.getConversations(req.session.userId);
+      const conversations = await storage.getConversations(req.session.userId!);
       res.json(conversations);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch conversations" });
@@ -284,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { content, toUserId } = req.body;
       
       const message = await storage.createMessage({
-        fromUserId: req.session.userId,
+        fromUserId: req.session.userId!,
         toUserId: toUserId || (req.session.isAdmin ? undefined : "admin-id"),
         content,
         isFromAdmin: req.session.isAdmin,
@@ -313,12 +316,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user accounts
   app.get("/api/accounts", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(req.session.userId!);
       if (!user?.isApproved) {
         return res.status(403).json({ message: "Account not approved" });
       }
 
-      const accounts = await storage.getAccountsByUserId(req.session.userId);
+      const accounts = await storage.getAccountsByUserId(req.session.userId!);
       res.json(accounts);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch accounts" });
@@ -328,12 +331,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user transactions
   app.get("/api/transactions", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(req.session.userId!);
       if (!user?.isApproved) {
         return res.status(403).json({ message: "Account not approved" });
       }
 
-      const accounts = await storage.getAccountsByUserId(req.session.userId);
+      const accounts = await storage.getAccountsByUserId(req.session.userId!);
       const allTransactions = [];
       
       for (const account of accounts) {
