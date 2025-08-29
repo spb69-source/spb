@@ -118,7 +118,7 @@ export default function Landing() {
       </header>
 
       {/* Revolutionary Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-32">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-48 sm:py-32">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -128,7 +128,7 @@ export default function Landing() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 text-white text-center lg:text-left">
+            <div className="space-y-8 text-white text-center lg:text-left max-w-4xl mx-auto lg:mx-0">
               <div className="space-y-6">
                 <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                   <Star className="h-4 w-4 text-yellow-400" />
@@ -145,12 +145,12 @@ export default function Landing() {
                   </span>
                 </h2>
                 
-                <p className="text-xl lg:text-2xl text-blue-100 max-w-xl leading-relaxed">
+                <p className="text-xl lg:text-2xl text-blue-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                   Experience the future of banking with AI-powered insights, instant global transfers, and military-grade security.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start max-w-lg mx-auto lg:mx-0">
                 <Link href="/signup">
                   <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 group">
                     Start Banking Today
