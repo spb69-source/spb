@@ -288,7 +288,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fromUserId: req.session.userId!,
         toUserId: toUserId || (req.session.isAdmin ? undefined : "admin-id"),
         content,
-        isFromAdmin: req.session.isAdmin,
+        isFromAdmin: req.session.isAdmin || false,
       });
 
       // Broadcast message via WebSocket

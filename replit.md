@@ -2,6 +2,8 @@
 
 This is a full-stack banking application called "Secure Professional Bank" built with React and Express. The application provides a comprehensive banking platform with separate user and admin interfaces, featuring account management, messaging, transactions, and loan applications. Users can register for accounts that require admin approval, and once approved, they can access banking services including account creation, transaction history, and communication with bank administrators.
 
+**Current Status:** Application is fully configured and running in the Replit environment. The database has been migrated from MongoDB to PostgreSQL using Drizzle ORM, and all dependencies have been installed.
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
