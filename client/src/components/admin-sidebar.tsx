@@ -21,18 +21,18 @@ export default function AdminSidebar({
     <>
       {/* Admin Sidebar */}
       <aside 
-        className={`bg-gray-900 text-white w-64 transition-transform duration-300 ${
+        className={`bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white w-64 transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 fixed md:relative z-30 h-full`}
       >
-        <div className="p-6 border-b border-gray-700">
+        <div className="p-6 border-b border-white/20">
           <div className="flex items-center space-x-2">
-            <div className="bg-red-600 p-2 rounded">
+            <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-xl shadow-xl">
               <ShieldCheck />
             </div>
             <div>
               <h3 className="font-semibold" data-testid="text-admin-panel">SPB Admin Panel</h3>
-              <p className="text-xs text-gray-400">Administrative Control</p>
+              <p className="text-xs text-blue-200">Administrative Control</p>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function AdminSidebar({
         <nav className="p-4 space-y-2">
           <Button
             variant={activeSection === "dashboard" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800"
+            className="w-full justify-start text-white hover:bg-white/10"
             onClick={() => onSectionChange("dashboard")}
             data-testid="button-nav-dashboard"
           >
@@ -50,7 +50,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "users" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800 relative"
+            className="w-full justify-start text-white hover:bg-white/10 relative"
             onClick={() => onSectionChange("users")}
             data-testid="button-nav-users"
           >
@@ -63,7 +63,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "approvals" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800 relative"
+            className="w-full justify-start text-white hover:bg-white/10 relative"
             onClick={() => onSectionChange("approvals")}
             data-testid="button-nav-approvals"
           >
@@ -76,7 +76,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "messages" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800 relative"
+            className="w-full justify-start text-white hover:bg-white/10 relative"
             onClick={() => onSectionChange("messages")}
             data-testid="button-nav-messages"
           >
@@ -89,7 +89,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "transactions" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800"
+            className="w-full justify-start text-white hover:bg-white/10"
             onClick={() => onSectionChange("transactions")}
             data-testid="button-nav-transactions"
           >
@@ -99,7 +99,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "security" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800"
+            className="w-full justify-start text-white hover:bg-white/10"
             onClick={() => onSectionChange("security")}
             data-testid="button-nav-security"
           >
@@ -109,7 +109,7 @@ export default function AdminSidebar({
           
           <Button
             variant={activeSection === "settings" ? "secondary" : "ghost"}
-            className="w-full justify-start text-white hover:bg-gray-800"
+            className="w-full justify-start text-white hover:bg-white/10"
             onClick={() => onSectionChange("settings")}
             data-testid="button-nav-settings"
           >

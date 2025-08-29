@@ -6,7 +6,8 @@ import {
   Clock, 
   Globe, 
   CheckCircle, 
-  Menu, 
+  Menu,
+  X, 
   Smartphone, 
   CreditCard, 
   TrendingUp,
@@ -93,7 +94,7 @@ export default function Landing() {
               className="lg:hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <Menu className="h-5 w-5" />
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
 
@@ -117,7 +118,7 @@ export default function Landing() {
       </header>
 
       {/* Revolutionary Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-20">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -125,9 +126,9 @@ export default function Landing() {
           <div className="absolute bottom-20 left-1/3 w-24 h-24 bg-cyan-500/20 rounded-full blur-xl animate-pulse delay-2000"></div>
         </div>
 
-        <div className="container mx-auto px-4 pt-20 relative z-10">
+        <div className="container mx-auto px-4 pt-12 pb-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 text-white">
+            <div className="space-y-8 text-white text-center lg:text-left">
               <div className="space-y-6">
                 <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                   <Star className="h-4 w-4 text-yellow-400" />
@@ -157,13 +158,13 @@ export default function Landing() {
                   </Button>
                 </Link>
                 <Link href="/signin">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-blue-900 px-8 py-4 rounded-xl backdrop-blur-sm transition-all duration-300">
+                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white px-8 py-4 rounded-xl backdrop-blur-sm transition-all duration-300">
                     Sign In
                   </Button>
                 </Link>
               </div>
 
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/20">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 pt-8 border-t border-white/20">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-white">500K+</div>
                   <div className="text-blue-200 text-sm">Happy Customers</div>
@@ -346,16 +347,30 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-center space-x-2 mt-8">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? 'bg-white' : 'bg-white/30'
-                  }`}
-                  onClick={() => setCurrentTestimonial(index)}
-                />
-              ))}
+            <div className="flex justify-center items-center space-x-4 mt-8">
+              <button
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-300"
+                onClick={() => setCurrentTestimonial(currentTestimonial === 0 ? testimonials.length - 1 : currentTestimonial - 1)}
+              >
+                <ArrowRight className="h-4 w-4 text-white rotate-180" />
+              </button>
+              <div className="flex space-x-2">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === currentTestimonial ? 'bg-white' : 'bg-white/30'
+                    }`}
+                    onClick={() => setCurrentTestimonial(index)}
+                  />
+                ))}
+              </div>
+              <button
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-300"
+                onClick={() => setCurrentTestimonial((currentTestimonial + 1) % testimonials.length)}
+              >
+                <ArrowRight className="h-4 w-4 text-white" />
+              </button>
             </div>
           </div>
         </div>
@@ -436,8 +451,8 @@ export default function Landing() {
       {/* Modern Footer */}
       <footer className="bg-gray-900 text-white py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            <div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div className="sm:col-span-2 lg:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-3 rounded-xl">
                   <Shield className="h-6 w-6" />
@@ -453,47 +468,40 @@ export default function Landing() {
             </div>
             
             <div>
-              <h4 className="font-bold text-lg mb-4">Products</h4>
+              <h4 className="font-bold text-lg mb-4">Quick Links</h4>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Personal Banking</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Business Banking</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Investment Services</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Credit Cards</a></li>
+                <li><Link href="/signup" className="hover:text-white transition-colors">Open Account</Link></li>
+                <li><Link href="/signin" className="hover:text-white transition-colors">Sign In</Link></li>
+                <li><a href="#support" className="hover:text-white transition-colors">24/7 Support</a></li>
+                <li><a href="#security" className="hover:text-white transition-colors">Security Center</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold text-lg mb-4">Support</h4>
+              <h4 className="font-bold text-lg mb-4">Legal</h4>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><span className="text-gray-500">Privacy Policy</span></li>
+                <li><span className="text-gray-500">Terms of Service</span></li>
+                <li><span className="text-gray-500">FDIC Information</span></li>
+                <li><span className="text-gray-500">Accessibility</span></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold text-lg mb-4">Company</h4>
+              <h4 className="font-bold text-lg mb-4">Contact</h4>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Investors</a></li>
+                <li>1-800-SPB-BANK</li>
+                <li>support@spb.com</li>
+                <li>24/7 Live Chat</li>
+                <li>Secure Messaging</li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 mb-4 md:mb-0">
-              © 2024 Secure Professional Bank. All rights reserved.
+          <div className="border-t border-gray-800 pt-8 text-center">
+            <p className="text-gray-400">
+              © 2024 Secure Professional Bank. All rights reserved. FDIC Insured.
             </p>
-            <div className="flex items-center space-x-6">
-              <Link href="/admin-login">
-                <Button variant="link" className="text-gray-500 hover:text-gray-400 text-sm">
-                  Admin Access
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </footer>

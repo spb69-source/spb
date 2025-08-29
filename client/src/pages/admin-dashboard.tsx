@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <header className="bg-white border-b border-border p-4 flex items-center justify-between">
+        <header className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-border p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
@@ -79,14 +79,14 @@ export default function AdminDashboard() {
               <Menu className="h-6 w-6" />
             </Button>
             <div>
-              <h1 className="text-2xl font-semibold" data-testid="text-admin-dashboard">Admin Dashboard</h1>
+              <h1 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" data-testid="text-admin-dashboard">Admin Dashboard</h1>
               <p className="text-muted-foreground">Secure Professional Bank Management</p>
             </div>
           </div>
           
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="bg-red-600 text-white p-2 rounded-full">
+              <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-full shadow-lg">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <span className="font-medium" data-testid="text-admin-name">SPB Admin</span>

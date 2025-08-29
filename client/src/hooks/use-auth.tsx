@@ -21,6 +21,22 @@ export function useAuth() {
   const { data: user, isLoading, error } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     retry: false,
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", {
+        credentials: "include",
+      });
+      
+      if (res.status === 401) {
+        return null;
+      }
+      
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status}: ${text}`);
+      }
+      
+      return res.json();
+    },
   });
 
   // Handle unauthorized errors at the page level

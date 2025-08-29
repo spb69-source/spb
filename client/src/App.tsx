@@ -35,6 +35,7 @@ function Router() {
           <Route path="/signup" component={SignUp} />
           <Route path="/signin" component={SignIn} />
           <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/admin" component={AdminLogin} />
         </>
       ) : isAdmin ? (
         <>
