@@ -9,16 +9,10 @@ import {
   type InsertTransaction,
   type LoanApplication,
   type InsertLoanApplication,
-  users,
-  accounts,
-  messages,
-  transactions,
-  loanApplications,
 } from "@shared/schema";
-import { db } from "./db";
+import { connectDB } from "./db";
 import bcrypt from "bcrypt";
-import { eq, and, or, desc } from "drizzle-orm";
-import { nanoid } from "nanoid";
+import { ObjectId } from "mongodb";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;

@@ -1,17 +1,20 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
-import * as schema from "@shared/schema";
+import { MongoClient, Db } from "mongodb";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
-}
+const mongoUri = "mongodb+srv://securebank69_db_user:DGwUstsGEMZJPqMs@spb.qjigdqa.mongodb.net/secure-pb?retryWrites=true&w=majority&appName=SPB";
 
-const sql = neon(process.env.DATABASE_URL);
-export const db = drizzle(sql, { schema });
+export const mongoClient = new MongoClient(mongoUri);
+let isConnected = false;
+let db: Db;
 
-export async function connectDB() {
+export async function connectDB(): Promise<Db> {
+  if (!isConnected) {
+    await mongoClient.connect();
+    db = mongoClient.db("secure-pb");
+    isConnected = true;
+    console.log("Connected to MongoDB successfully");
+  }
   return db;
 }
