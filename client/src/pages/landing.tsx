@@ -118,7 +118,7 @@ export default function Landing() {
       </header>
 
       {/* Revolutionary Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-20">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 pt-32 pb-16">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -158,7 +158,7 @@ export default function Landing() {
                   </Button>
                 </Link>
                 <Link href="/signin">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white px-8 py-4 rounded-xl backdrop-blur-sm transition-all duration-300">
+                  <Button size="lg" variant="outline" className="border-white/50 text-white bg-white/10 hover:bg-white/20 hover:text-white px-8 py-4 rounded-xl backdrop-blur-sm transition-all duration-300">
                     Sign In
                   </Button>
                 </Link>
@@ -451,7 +451,7 @@ export default function Landing() {
       {/* Modern Footer */}
       <footer className="bg-gray-900 text-white py-16">
         <div className="container mx-auto px-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 text-center sm:text-left">
             <div className="sm:col-span-2 lg:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-3 rounded-xl">

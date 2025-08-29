@@ -21,7 +21,7 @@ const signupSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string(),
   ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "SSN must be in format XXX-XX-XXXX"),
-  phone: z.string().min(10, "Phone number is required"),
+  phone: z.string().regex(/^\+\d{1,3}\s?\d{10,14}$/, "Phone number must include country code (e.g., +1 1234567890)"),
   streetAddress: z.string().min(1, "Street address is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
@@ -372,7 +372,7 @@ export default function SignUp() {
                                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <Input 
                                   type="tel" 
-                                  placeholder="+1 (555) 123-4567" 
+                                  placeholder="+1 5551234567" 
                                   className="pl-12 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white/50"
                                   data-testid="input-phone" 
                                   {...field} 
