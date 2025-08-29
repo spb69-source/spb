@@ -93,7 +93,6 @@ export default function Landing() {
             <nav className="hidden lg:flex items-center space-x-8">
               <Link href="/signin" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Personal Banking</Link>
               <Link href="/signup" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Business Solutions</Link>
-              <Link href="/admin-login" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Admin Portal</Link>
               <Link href="/signin">
                 <Button variant="ghost" className="font-medium hover:bg-blue-50">Sign In</Button>
               </Link>
@@ -117,7 +116,6 @@ export default function Landing() {
             <div className="lg:hidden mt-4 pb-4 space-y-3 border-t border-gray-200">
               <Link href="/signin" className="block py-2 text-gray-600 hover:text-blue-600">Personal Banking</Link>
               <Link href="/signup" className="block py-2 text-gray-600 hover:text-blue-600">Business Solutions</Link>
-              <Link href="/admin-login" className="block py-2 text-gray-600 hover:text-blue-600">Admin Portal</Link>
               <div className="flex space-x-3 pt-2">
                 <Link href="/signin" className="flex-1">
                   <Button variant="outline" className="w-full">Sign In</Button>
@@ -132,7 +130,7 @@ export default function Landing() {
       </header>
 
       {/* Revolutionary Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-20 lg:py-32">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-32">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -142,7 +140,7 @@ export default function Landing() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 text-white text-center max-w-4xl mx-auto">
+            <div className="space-y-8 text-white text-center lg:text-left max-w-4xl lg:mx-0">
               <div className="space-y-6">
                 <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                   <Star className="h-4 w-4 text-yellow-400" />
@@ -159,12 +157,12 @@ export default function Landing() {
                   </span>
                 </h2>
                 
-                <p className="text-xl lg:text-2xl text-blue-100 max-w-xl mx-auto leading-relaxed">
+                <p className="text-xl lg:text-2xl text-blue-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                   Experience the future of banking with AI-powered insights, instant global transfers, and military-grade security.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start max-w-lg mx-auto lg:mx-0">
                 <Link href="/signup">
                   <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 group">
                     Start Banking Today
