@@ -12,7 +12,7 @@ export const insertUserSchema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().min(1, "ZIP code is required"),
-  dateOfBirth: z.date(),
+  dateOfBirth: z.union([z.string(), z.date()]).transform((val) => typeof val === 'string' ? new Date(val) : val),
 });
 
 export const insertMessageSchema = z.object({
