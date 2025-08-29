@@ -92,6 +92,7 @@ export default function SignUp() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSSN, setShowSSN] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const { register, isRegisterPending } = useAuth();
   const { toast } = useToast();
@@ -394,11 +395,19 @@ export default function SignUp() {
                               <div className="relative">
                                 <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <Input 
+                                  type={showSSN ? "text" : "password"}
                                   placeholder="123-45-6789" 
-                                  className="pl-12 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white/50"
+                                  className="pl-12 pr-12 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white/50"
                                   data-testid="input-ssn" 
                                   {...field} 
                                 />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowSSN(!showSSN)}
+                                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                  {showSSN ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                               </div>
                             </FormControl>
                             <FormMessage />
