@@ -2,7 +2,7 @@
 
 This is a full-stack banking application called "Secure Professional Bank" built with React and Express. The application provides a comprehensive banking platform with separate user and admin interfaces, featuring account management, messaging, transactions, and loan applications. Users can register for accounts that require admin approval, and once approved, they can access banking services including account creation, transaction history, and communication with bank administrators.
 
-**Current Status:** Application is fully configured and running in the Replit environment using MongoDB database. All dependencies have been installed and the hero section styling has been optimized for better mobile responsiveness.
+**Current Status:** Application is fully configured and running in the Replit environment using MongoDB database. The app successfully connects to the MongoDB Atlas cluster and serves both frontend and backend on port 5000. All dependencies have been installed and the application is ready for use.
 
 # User Preferences
 
@@ -25,18 +25,18 @@ The backend follows a REST API architecture built with Express.js and TypeScript
 
 **Key Backend Decisions:**
 - **Express.js**: Mature and flexible Node.js framework for API development
-- **Session-based authentication**: Uses express-session with PostgreSQL storage for secure user sessions
+- **Session-based authentication**: Uses express-session with in-memory storage for secure user sessions
 - **Modular route structure**: Separates route definitions from the main server file for better organization
 - **WebSocket integration**: Enables real-time messaging between users and administrators
 
 ## Data Storage
-The application uses PostgreSQL as the primary database with Drizzle ORM for type-safe database operations. The database schema includes tables for users, accounts, transactions, messages, and loan applications.
+The application uses MongoDB as the primary database with native MongoDB driver for database operations. The database schema includes collections for users, accounts, transactions, messages, and loan applications.
 
 **Database Design Decisions:**
-- **PostgreSQL**: Robust relational database suitable for financial applications
-- **Drizzle ORM**: Provides type safety and excellent TypeScript integration
-- **Neon Database**: Cloud PostgreSQL provider for simplified deployment and scaling
-- **Session storage**: Dedicated sessions table for secure session management
+- **MongoDB Atlas**: Cloud-hosted MongoDB for scalability and reliability
+- **Native MongoDB Driver**: Direct integration with MongoDB for optimal performance
+- **Document-based storage**: Flexible schema design suitable for banking data models
+- **Session storage**: In-memory session management with express-session
 
 ## Authentication and Authorization
 The system implements role-based access control with separate authentication flows for regular users and administrators. Users must be approved by administrators before accessing banking features.
