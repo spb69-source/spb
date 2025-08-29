@@ -5,16 +5,13 @@ import { storage } from "./storage";
 import { insertUserSchema, insertMessageSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import session from "express-session";
-import connectPg from "connect-pg-simple";
-
-const pgStore = connectPg(session);
+import MongoStore from "connect-mongo";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session configuration
+  // Session configuration (MongoDB)
   app.use(session({
-    store: new pgStore({
-      conString: process.env.DATABASE_URL,
-      createTableIfMissing: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DATABASE_URL,
       ttl: 24 * 60 * 60, // 24 hours
     }),
     secret: process.env.SESSION_SECRET || "secure-professional-bank-secret",
