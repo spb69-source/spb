@@ -243,13 +243,6 @@ export default function SignIn() {
                     </Link>
                   </p>
                 </div>
-                
-                <div className="pt-6 border-t border-gray-200">
-                  <Link href="/admin-login" className="flex items-center justify-center space-x-2 text-gray-500 hover:text-gray-700 transition-colors group" data-testid="link-admin-login">
-                    <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-medium">Admin Access</span>
-                  </Link>
-                </div>
               </div>
             </CardContent>
           </Card>
