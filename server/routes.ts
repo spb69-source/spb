@@ -5,16 +5,14 @@ import { storage } from "./storage";
 import { insertUserSchema, insertMessageSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
+import MemoryStore from "memorystore";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session configuration (PostgreSQL)
-  const PgSession = connectPgSimple(session);
+  // Session configuration (Memory Store)
+  const MemoryStoreSession = MemoryStore(session);
   app.use(session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL,
-      tableName: 'sessions',
-      createTableIfMissing: true,
+    store: new MemoryStoreSession({
+      checkPeriod: 86400000, // prune expired entries every 24h
     }),
     secret: process.env.SESSION_SECRET || "secure-professional-bank-secret",
     resave: false,
