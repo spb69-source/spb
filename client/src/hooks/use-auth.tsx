@@ -89,8 +89,26 @@ export function useAuth() {
       return response.json();
     },
     onSuccess: () => {
+      // Clear all cached data
+      queryClient.clear();
+      // Remove any additional cached data
+      queryClient.removeQueries();
+      // Reset query client
+      queryClient.resetQueries();
+      // Navigate to home page
+      setLocation("/");
+      // Force a page refresh to ensure all state is cleared
+      window.location.reload();
+    },
+    onError: (error) => {
+      // Even if logout fails on backend, clear frontend state
       queryClient.clear();
       setLocation("/");
+      toast({
+        title: "Logout Warning",
+        description: "Session ended. Please sign in again.",
+        variant: "destructive",
+      });
     },
   });
 
