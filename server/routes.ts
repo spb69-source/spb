@@ -139,9 +139,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current user
   app.get("/api/auth/user", requireAuth, async (req, res) => {
     try {
+      // Handle admin user specially
+      if (req.session.isAdmin && req.session.userId === "admin-id") {
+        const admin = await storage.getAdminByCredentials("spb@admin.io", "SPB Admin");
+        if (admin) {
+          return res.json({
+            id: admin.id,
+            email: admin.email,
+            firstName: admin.firstName,
+            lastName: admin.lastName,
+            isApproved: admin.isApproved,
+            isAdmin: admin.isAdmin
+          });
+        }
+      }
+
+      // Handle regular users
       const user = await storage.getUser(req.session.userId!);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        // Clear invalid session
+        req.session.destroy((err) => {
+          console.log("Destroyed invalid session:", err);
+        });
+        return res.status(401).json({ message: "Session invalid" });
       }
 
       res.json({ 
