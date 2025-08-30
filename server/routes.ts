@@ -167,6 +167,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Forgot password
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const token = await storage.createPasswordResetToken(email);
+      
+      if (!token) {
+        // Don't reveal if email exists or not for security
+        return res.json({ 
+          message: "If an account with that email exists, a reset link has been generated.",
+          resetLink: `${req.protocol}://${req.get('host')}/reset-password?token=placeholder`
+        });
+      }
+
+      const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${token}`;
+      
+      res.json({ 
+        message: "Password reset link generated successfully",
+        resetLink 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Validate reset token
+  app.post("/api/auth/validate-reset-token", async (req, res) => {
+    try {
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({ message: "Reset token is required" });
+      }
+
+      const userId = await storage.validatePasswordResetToken(token);
+      
+      if (!userId) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      res.json({ message: "Token is valid", userId });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to validate reset token" });
+    }
+  });
+
+  // Reset password
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and password are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      const userId = await storage.validatePasswordResetToken(token);
+      
+      if (!userId) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      const updatedUser = await storage.updateUserPassword(userId, password);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Delete the used token
+      await storage.deletePasswordResetToken(token);
+
+      res.json({ 
+        message: "Password reset successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   // Get all users (admin only)
   app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {

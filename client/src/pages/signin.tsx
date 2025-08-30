@@ -208,20 +208,13 @@ export default function SignIn() {
                         </FormItem>
                       )}
                     />
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        toast({
-                          title: "Password Reset",
-                          description: "For security reasons, please contact your bank administrator at spb@admin.io to reset your password.",
-                          duration: 5000,
-                        });
-                      }}
+                    <Link 
+                      href="/forgot-password"
                       className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors" 
                       data-testid="link-forgot-password"
                     >
                       Forgot password?
-                    </button>
+                    </Link>
                   </div>
                   
                   <Button 

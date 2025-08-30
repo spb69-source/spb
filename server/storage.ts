@@ -13,12 +13,17 @@ import {
 import { connectDB } from "./db";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
+import { nanoid } from "nanoid";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
   updateUserApproval(id: string, isApproved: boolean): Promise<User | undefined>;
+  updateUserPassword(id: string, newPassword: string): Promise<User | undefined>;
+  createPasswordResetToken(email: string): Promise<string | null>;
+  validatePasswordResetToken(token: string): Promise<string | null>;
+  deletePasswordResetToken(token: string): Promise<void>;
   getPendingUsers(): Promise<User[]>;
   getAllUsers(): Promise<User[]>;
   getMessages(userId1: string, userId2?: string): Promise<Message[]>;
@@ -209,6 +214,57 @@ export class DatabaseStorage implements IStorage {
         userName: user ? `${user.firstName} ${user.lastName}`.trim() : ""
       };
     });
+  }
+
+  async updateUserPassword(id: string, newPassword: string): Promise<User | undefined> {
+    const db = await connectDB();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const result = await db.collection<User>("users").findOneAndUpdate(
+      { id },
+      { $set: { password: hashedPassword, updatedAt: new Date() } },
+      { returnDocument: "after" }
+    );
+    return result || undefined;
+  }
+
+  async createPasswordResetToken(email: string): Promise<string | null> {
+    const db = await connectDB();
+    const user = await this.getUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const token = nanoid(64);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    await db.collection("passwordResetTokens").insertOne({
+      token,
+      email,
+      userId: user.id,
+      expiresAt,
+      createdAt: new Date(),
+    });
+
+    return token;
+  }
+
+  async validatePasswordResetToken(token: string): Promise<string | null> {
+    const db = await connectDB();
+    const resetToken = await db.collection("passwordResetTokens").findOne({
+      token,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!resetToken) {
+      return null;
+    }
+
+    return resetToken.userId;
+  }
+
+  async deletePasswordResetToken(token: string): Promise<void> {
+    const db = await connectDB();
+    await db.collection("passwordResetTokens").deleteOne({ token });
   }
 
   async getAdminByCredentials(email: string, username: string): Promise<User | undefined> {
