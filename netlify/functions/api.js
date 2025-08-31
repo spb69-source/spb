@@ -67,25 +67,67 @@ app.get('/', async (req, res) => {
 
 // Auth routes
 app.get('/auth/user', async (req, res) => {
-  if (!req.session.user) {
+  if (!req.session.userId) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  res.json({ user: req.session.user });
+  
+  try {
+    await connectDB();
+    const { ObjectId } = require('mongodb');
+    
+    // Handle admin user specially
+    if (req.session.isAdmin && req.session.userId === "admin-id") {
+      const admin = await db.collection('admins').findOne({ 
+        email: "spb@admin.io", 
+        username: "SPB Admin" 
+      });
+      if (admin) {
+        return res.json({
+          id: admin._id.toString(),
+          email: admin.email,
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          isApproved: true,
+          isAdmin: true
+        });
+      }
+    }
+
+    // Handle regular users
+    const user = await db.collection('users').findOne({ 
+      _id: new ObjectId(req.session.userId) 
+    });
+    
+    if (!user) {
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: 'Session invalid' });
+    }
+
+    res.json({ 
+      id: user._id.toString(), 
+      email: user.email, 
+      firstName: user.firstName, 
+      lastName: user.lastName,
+      isApproved: user.isApproved || false,
+      isAdmin: user.isAdmin || false 
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Failed to fetch user' });
+  }
 });
 
 app.post('/auth/register', async (req, res) => {
   try {
     await connectDB();
-    const { username, email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, phone, streetAddress, city, state, zipCode, ssn } = req.body;
     
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({ message: 'All required fields must be provided' });
     }
     
     // Check if user already exists
-    const existingUser = await db.collection('users').findOne({ 
-      $or: [{ username }, { email }] 
-    });
+    const existingUser = await db.collection('users').findOne({ email });
     
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
@@ -96,38 +138,53 @@ app.post('/auth/register', async (req, res) => {
 
     // Create new user
     const newUser = {
-      username,
       email,
       password: hashedPassword,
-      firstName: firstName || '',
-      lastName: lastName || '',
-      role: 'user',
-      approved: false,
+      firstName,
+      lastName,
+      phone: phone || '',
+      streetAddress: streetAddress || '',
+      city: city || '',
+      state: state || '',
+      zipCode: zipCode || '',
+      ssn: ssn || '',
+      isAdmin: false,
+      isApproved: false,
       createdAt: new Date()
     };
 
     const result = await db.collection('users').insertOne(newUser);
     
-    res.status(201).json({ 
-      message: 'Registration successful! Awaiting admin approval.',
-      userId: result.insertedId
+    // Create session for the new user
+    req.session.userId = result.insertedId.toString();
+    req.session.isAdmin = false;
+    req.session.isApproved = false;
+
+    res.json({ 
+      user: { 
+        id: result.insertedId.toString(), 
+        email: newUser.email, 
+        firstName: newUser.firstName, 
+        lastName: newUser.lastName,
+        isApproved: false 
+      } 
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Registration failed' });
+    res.status(400).json({ message: 'Registration failed', error: error.message });
   }
 });
 
 app.post('/auth/login', async (req, res) => {
   try {
     await connectDB();
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
     
-    const user = await db.collection('users').findOne({ username });
+    const user = await db.collection('users').findOne({ email, isAdmin: { $ne: true } });
     
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -138,25 +195,70 @@ app.post('/auth/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    if (!user.approved) {
-      return res.status(403).json({ message: 'Account pending admin approval' });
-    }
-
     // Store user in session
-    req.session.user = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role
-    };
+    req.session.userId = user._id.toString();
+    req.session.isAdmin = false;
+    req.session.isApproved = user.isApproved || false;
 
     res.json({ 
-      message: 'Login successful',
-      user: req.session.user
+      user: { 
+        id: user._id.toString(), 
+        email: user.email, 
+        firstName: user.firstName, 
+        lastName: user.lastName,
+        isApproved: user.isApproved || false 
+      } 
     });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Login failed' });
+  }
+});
+
+// Admin login
+app.post('/auth/admin-login', async (req, res) => {
+  try {
+    const { email, username, password } = req.body;
+
+    // Check hardcoded admin credentials
+    if (email === "spb@admin.io" && username === "SPB Admin" && password === "SpbAdminLogin@01,.") {
+      await connectDB();
+      let admin = await db.collection('admins').findOne({ email, username });
+      
+      if (!admin) {
+        // Create admin if doesn't exist
+        const newAdmin = {
+          email: "spb@admin.io",
+          username: "SPB Admin",
+          firstName: "Admin",
+          lastName: "User",
+          isAdmin: true,
+          isApproved: true,
+          createdAt: new Date()
+        };
+        const result = await db.collection('admins').insertOne(newAdmin);
+        admin = { ...newAdmin, _id: result.insertedId };
+      }
+      
+      req.session.userId = "admin-id";
+      req.session.isAdmin = true;
+      req.session.isApproved = true;
+
+      return res.json({ 
+        user: { 
+          id: admin._id.toString(), 
+          email: admin.email, 
+          firstName: admin.firstName, 
+          lastName: admin.lastName,
+          isAdmin: true 
+        } 
+      });
+    }
+
+    res.status(401).json({ message: 'Invalid admin credentials' });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ message: 'Admin login failed' });
   }
 });
 
@@ -172,17 +274,31 @@ app.post('/auth/logout', (req, res) => {
 // Admin routes
 app.get('/admin/pending-users', async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== 'admin') {
+    if (!req.session.userId || !req.session.isAdmin) {
       return res.status(403).json({ message: 'Admin access required' });
     }
 
     await connectDB();
     const pendingUsers = await db.collection('users').find({ 
-      approved: false,
-      role: 'user'
+      isApproved: false,
+      isAdmin: { $ne: true }
     }).toArray();
     
-    res.json(pendingUsers);
+    const formattedUsers = pendingUsers.map(user => ({
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      createdAt: user.createdAt,
+      phone: user.phone,
+      streetAddress: user.streetAddress,
+      city: user.city,
+      state: user.state,
+      zipCode: user.zipCode,
+      ssn: user.ssn ? `***-**-${user.ssn.slice(-4)}` : '',
+    }));
+    
+    res.json(formattedUsers);
   } catch (error) {
     console.error('Error fetching pending users:', error);
     res.status(500).json({ message: 'Failed to fetch pending users' });
@@ -191,19 +307,36 @@ app.get('/admin/pending-users', async (req, res) => {
 
 app.post('/admin/approve-user/:id', async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== 'admin') {
+    if (!req.session.userId || !req.session.isAdmin) {
       return res.status(403).json({ message: 'Admin access required' });
     }
 
     await connectDB();
     const { ObjectId } = require('mongodb');
     
-    await db.collection('users').updateOne(
+    const result = await db.collection('users').updateOne(
       { _id: new ObjectId(req.params.id) },
-      { $set: { approved: true } }
+      { $set: { isApproved: true } }
     );
     
-    res.json({ message: 'User approved successfully' });
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Create default checking account for approved user
+    const user = await db.collection('users').findOne({ _id: new ObjectId(req.params.id) });
+    if (user) {
+      await db.collection('accounts').insertOne({
+        userId: req.params.id,
+        accountNumber: `SPB${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+        accountType: 'checking',
+        balance: '0.00',
+        isActive: true,
+        createdAt: new Date()
+      });
+    }
+    
+    res.json({ message: 'User approved successfully', user });
   } catch (error) {
     console.error('Error approving user:', error);
     res.status(500).json({ message: 'Failed to approve user' });
