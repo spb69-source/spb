@@ -10,3 +10,7 @@
 [x] 10. Created Dockerfile and .dockerignore for Back4app deployment
 [x] 11. Updated server port configuration for Back4app compatibility
 [x] 12. Verified production build works with Back4app setup
+[x] 13. Resolved Back4app GitHub integration issues by switching to Vercel
+[x] 14. Converted banking app to Vercel serverless functions
+[x] 15. Created vercel.json configuration and api/index.js serverless function
+[x] 16. Successfully tested production build for Vercel deployment
