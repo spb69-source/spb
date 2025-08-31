@@ -1,0 +1,19 @@
+{
+  "name": "secure-professional-bank",
+  "version": "1.0.0",
+  "description": "A secure banking application built with React and Express",
+  "main": "glitch-server.js",
+  "scripts": {
+    "start": "node glitch-server.js",
+    "build": "npm run build:client",
+    "build:client": "cd client && npm install && npm run build"
+  },
+  "keywords": ["banking", "react", "express", "mongodb"],
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongodb": "^6.19.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
