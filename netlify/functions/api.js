@@ -66,7 +66,7 @@ app.get('/', async (req, res) => {
 });
 
 // Auth routes
-app.get('/auth/user', async (req, res) => {
+app.get('/api/auth/user', async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -117,7 +117,7 @@ app.get('/auth/user', async (req, res) => {
   }
 });
 
-app.post('/auth/register', async (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   try {
     await connectDB();
     const { email, password, firstName, lastName, phone, streetAddress, city, state, zipCode, ssn } = req.body;
@@ -175,7 +175,7 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   try {
     await connectDB();
     const { email, password } = req.body;
@@ -216,7 +216,7 @@ app.post('/auth/login', async (req, res) => {
 });
 
 // Admin login
-app.post('/auth/admin-login', async (req, res) => {
+app.post('/api/auth/admin-login', async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
@@ -262,7 +262,7 @@ app.post('/auth/admin-login', async (req, res) => {
   }
 });
 
-app.post('/auth/logout', (req, res) => {
+app.post('/api/auth/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: 'Could not log out' });
@@ -272,7 +272,7 @@ app.post('/auth/logout', (req, res) => {
 });
 
 // Admin routes
-app.get('/admin/pending-users', async (req, res) => {
+app.get('/api/admin/pending-users', async (req, res) => {
   try {
     if (!req.session.userId || !req.session.isAdmin) {
       return res.status(403).json({ message: 'Admin access required' });
@@ -305,7 +305,7 @@ app.get('/admin/pending-users', async (req, res) => {
   }
 });
 
-app.post('/admin/approve-user/:id', async (req, res) => {
+app.post('/api/admin/approve-user/:id', async (req, res) => {
   try {
     if (!req.session.userId || !req.session.isAdmin) {
       return res.status(403).json({ message: 'Admin access required' });
@@ -344,7 +344,7 @@ app.post('/admin/approve-user/:id', async (req, res) => {
 });
 
 // Account routes
-app.get('/accounts', async (req, res) => {
+app.get('/api/accounts', async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -362,7 +362,7 @@ app.get('/accounts', async (req, res) => {
   }
 });
 
-app.post('/accounts', async (req, res) => {
+app.post('/api/accounts', async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -397,7 +397,7 @@ app.post('/accounts', async (req, res) => {
 });
 
 // Message routes
-app.get('/messages', async (req, res) => {
+app.get('/api/messages', async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -418,7 +418,7 @@ app.get('/messages', async (req, res) => {
   }
 });
 
-app.post('/messages', async (req, res) => {
+app.post('/api/messages', async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: 'Unauthorized' });
